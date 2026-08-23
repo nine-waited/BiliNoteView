@@ -1,13 +1,11 @@
 """BiliNoteView — cloud note storage API for remote viewing."""
 
-from __future__ import annotations
-
 import json
 import os
 import secrets
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,10 +30,10 @@ def ensure_dirs() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def auth_push(authorization: str | None = Header(default=None)) -> None:
+def auth_push(authorization: Optional[str] = Header(default=None)) -> None:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing bearer token")
-    token = authorization.removeprefix("Bearer ").strip()
+    token = authorization.replace("Bearer ", "", 1).strip()
     if not secrets.compare_digest(token, PUSH_TOKEN):
         raise HTTPException(status_code=403, detail="Invalid token")
 
@@ -48,7 +46,7 @@ def safe_task_id(task_id: str) -> str:
 
 
 def note_path(task_id: str) -> Path:
-    return DATA_DIR / f"{safe_task_id(task_id)}.json"
+    return DATA_DIR / "{0}.json".format(safe_task_id(task_id))
 
 
 class PushNoteBody(BaseModel):
@@ -60,16 +58,16 @@ class PushNoteBody(BaseModel):
     platform: str = "bilibili"
     quality: str = ""
     style: str = "detailed"
-    format: list[str] = Field(default_factory=list)
+    format: List[str] = Field(default_factory=list)
     model_name: str = ""
     provider_id: str = ""
     prompt_tokens: int = 0
     completion_tokens: int = 0
     total_tokens: int = 0
     transcript_source: str = "subtitle"
-    transcript: dict[str, Any] | None = None
-    audio_meta: dict[str, Any] | None = None
-    created_at: str | None = None
+    transcript: Optional[Dict[str, Any]] = None
+    audio_meta: Optional[Dict[str, Any]] = None
+    created_at: Optional[str] = None
 
 
 @app.on_event("startup")
@@ -78,17 +76,17 @@ def startup() -> None:
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
+def health() -> Dict[str, str]:
     return {"status": "ok"}
 
 
 @app.post("/api/notes/push")
-def push_note(body: PushNoteBody, _: None = Depends(auth_push)) -> dict[str, Any]:
+def push_note(body: PushNoteBody, _auth: None = Depends(auth_push)) -> Dict[str, Any]:
     if not body.markdown or not body.markdown.strip():
         raise HTTPException(status_code=400, detail="markdown is empty")
     tid = safe_task_id(body.task_id)
     created_at = body.created_at or datetime.now(timezone.utc).isoformat()
-    payload = body.model_dump()
+    payload = body.dict()
     payload["task_id"] = tid
     payload["created_at"] = created_at
     payload["updated_at"] = datetime.now(timezone.utc).isoformat()
@@ -100,18 +98,19 @@ def push_note(body: PushNoteBody, _: None = Depends(auth_push)) -> dict[str, Any
     return {"code": 0, "msg": "success", "data": {"ok": True, "task_id": tid}}
 
 
-def _collect_list_items() -> list[dict[str, Any]]:
+def _collect_list_items() -> List[Dict[str, Any]]:
     ensure_dirs()
-    items: list[dict[str, Any]] = []
+    items: List[Dict[str, Any]] = []
     for path in DATA_DIR.glob("*.json"):
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
             if not isinstance(data, dict):
                 continue
+            audio_meta = data.get("audio_meta") or {}
             items.append(
                 {
                     "task_id": data.get("task_id", path.stem),
-                    "title": data.get("title") or (data.get("audio_meta") or {}).get("title") or path.stem,
+                    "title": data.get("title") or audio_meta.get("title") or path.stem,
                     "video_url": data.get("video_url", ""),
                     "bvid": data.get("bvid", ""),
                     "platform": data.get("platform", ""),
@@ -124,22 +123,22 @@ def _collect_list_items() -> list[dict[str, Any]]:
                     "transcript_source": data.get("transcript_source", "subtitle"),
                     "created_at": data.get("created_at", ""),
                     "updated_at": data.get("updated_at", ""),
-                    "cover_url": (data.get("audio_meta") or {}).get("cover_url", ""),
+                    "cover_url": audio_meta.get("cover_url", ""),
                 }
             )
-        except (OSError, json.JSONDecodeError):
+        except (OSError, ValueError):
             continue
     items.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     return items
 
 
 @app.get("/api/notes/list")
-def list_notes() -> dict[str, Any]:
+def list_notes() -> Dict[str, Any]:
     return {"code": 0, "msg": "success", "data": _collect_list_items()}
 
 
 @app.get("/api/notes/{task_id}")
-def get_note(task_id: str) -> dict[str, Any]:
+def get_note(task_id: str) -> Dict[str, Any]:
     path = note_path(task_id)
     if not path.is_file():
         raise HTTPException(status_code=404, detail="Note not found")
