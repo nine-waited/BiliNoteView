@@ -3,12 +3,15 @@
 import json
 import os
 import secrets
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 APP_DIR = Path(__file__).resolve().parent
@@ -78,6 +81,35 @@ def startup() -> None:
 @app.get("/health")
 def health() -> Dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/api/image_proxy")
+def image_proxy(url: str, request: Request) -> Response:
+    target = (url or "").strip()
+    if not target.startswith(("http://", "https://")):
+        raise HTTPException(status_code=400, detail="invalid url")
+    headers = {
+        "Referer": "https://www.bilibili.com/",
+        "User-Agent": request.headers.get(
+            "User-Agent",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        ),
+    }
+    req = urllib.request.Request(target, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = resp.read()
+            content_type = resp.headers.get("Content-Type", "image/jpeg")
+    except urllib.error.HTTPError as exc:
+        raise HTTPException(status_code=exc.code, detail="image fetch failed") from exc
+    except urllib.error.URLError as exc:
+        raise HTTPException(status_code=502, detail="image fetch failed") from exc
+
+    return Response(
+        content=data,
+        media_type=content_type,
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 @app.post("/api/notes/push")

@@ -13,8 +13,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip.tsx'
-import LazyImage from "@/components/LazyImage.tsx";
-import {FC, useState, useEffect, useMemo} from 'react'
+import LazyImage from '@/components/LazyImage.tsx'
+import { coverOrPlaceholder } from '@/utils/imageUrl'
+import { FC, useState, useEffect, useMemo } from 'react'
 
 interface NoteHistoryProps {
   onSelect: (taskId: string) => void
@@ -25,8 +26,6 @@ interface NoteHistoryProps {
 const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete }) => {
   const tasks = useTaskStore(state => state.tasks)
   const removeTask = useTaskStore(state => (state as { removeTask?: (id: string) => void }).removeTask)
-  // 确保baseURL没有尾部斜杠
-  const baseURL = (String(import.meta.env.VITE_API_BASE_URL || 'api')).replace(/\/$/, '')
   const [rawSearch, setRawSearch] = useState('')
   const [search, setSearch] = useState('')
   const fuse = useMemo(() => new Fuse(tasks, {
@@ -90,21 +89,16 @@ const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete })
               className={cn('flex items-center gap-4')}
             >
               {/* 封面图 */}
-              {task.platform === 'local' ? (
+              {(task.formData?.platform || task.audioMeta.platform) === 'local' ? (
                 <img
-                  src={
-                    task.audioMeta.cover_url ? `${task.audioMeta.cover_url}` : '/placeholder.png'
-                  }
+                  src={coverOrPlaceholder(task.audioMeta.cover_url)}
                   alt="封面"
+                  referrerPolicy="no-referrer"
                   className="h-10 w-12 rounded-md object-cover"
                 />
               ) : (
                   <LazyImage
-                      src={
-                        task.audioMeta.cover_url
-                            ? task.audioMeta.cover_url
-                            : '/placeholder.png'
-                      }
+                      src={coverOrPlaceholder(task.audioMeta.cover_url)}
                       alt="封面"
                   />
               )}
