@@ -27,7 +27,7 @@ export const HomePage: FC = () => {
   return (
     <HomeLayout
       Preview={<MarkdownViewer status={status} appMode="cloud" />}
-      History={<History hideDelete />}
+      History={<History />}
     />
   )
 }

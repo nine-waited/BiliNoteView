@@ -1,5 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { fetchNoteDetail, fetchNoteList, type CloudNoteDetail } from '@/services/viewNotes'
+import {
+  getCachedCloudNote,
+  setCachedCloudNote,
+} from '@/services/cloudNoteCache'
 import { useTaskStore, type Task } from '@/store/taskStore'
 
 function mapDetailToTask(data: CloudNoteDetail): Task {
@@ -54,7 +58,6 @@ function mapDetailToTask(data: CloudNoteDetail): Task {
 export function useCloudNotes(intervalMs = 30000) {
   const syncFromCloud = useTaskStore(state => state.syncFromCloud)
   const setCurrentTask = useTaskStore(state => state.setCurrentTask)
-  const detailCache = useRef<Map<string, Task>>(new Map())
 
   const load = async () => {
     try {
@@ -63,7 +66,7 @@ export function useCloudNotes(intervalMs = 30000) {
       const tasks: Task[] = []
 
       for (const item of summaries) {
-        const cached = detailCache.current.get(item.task_id)
+        const cached = getCachedCloudNote(item.task_id)
         if (cached) {
           tasks.push(cached)
           continue
@@ -71,7 +74,7 @@ export function useCloudNotes(intervalMs = 30000) {
         try {
           const detail = await fetchNoteDetail(item.task_id)
           const task = mapDetailToTask(detail)
-          detailCache.current.set(item.task_id, task)
+          setCachedCloudNote(item.task_id, task)
           tasks.push(task)
         } catch {
           tasks.push(

@@ -46,3 +46,9 @@ export function fetchNoteList() {
 export function fetchNoteDetail(taskId: string) {
   return request.get<CloudNoteDetail>(`/notes/${encodeURIComponent(taskId)}`)
 }
+
+export function deleteNote(taskId: string) {
+  return request.delete<{ ok: boolean; task_id: string }>(
+    `/notes/${encodeURIComponent(taskId)}`
+  )
+}

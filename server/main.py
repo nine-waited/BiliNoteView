@@ -178,6 +178,19 @@ def get_note(task_id: str) -> Dict[str, Any]:
     return {"code": 0, "msg": "success", "data": data}
 
 
+@app.delete("/api/notes/{task_id}")
+def delete_note(task_id: str) -> Dict[str, Any]:
+    tid = safe_task_id(task_id)
+    path = note_path(tid)
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Note not found")
+    path.unlink()
+    tmp = path.with_suffix(".tmp")
+    if tmp.is_file():
+        tmp.unlink()
+    return {"code": 0, "msg": "success", "data": {"ok": True, "task_id": tid}}
+
+
 if __name__ == "__main__":
     import uvicorn
 

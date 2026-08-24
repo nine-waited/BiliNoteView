@@ -1,4 +1,4 @@
-import { useTaskStore } from '@/store/taskStore'
+import { useTaskStore, type Task } from '@/store/taskStore'
 import { ScrollArea } from '@/components/ui/scroll-area.tsx'
 import { Badge } from '@/components/ui/badge.tsx'
 import { cn } from '@/lib/utils.ts'
@@ -13,6 +13,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip.tsx'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog.tsx'
 import LazyImage from '@/components/LazyImage.tsx'
 import { coverOrPlaceholder } from '@/utils/imageUrl'
 import { FC, useState, useEffect, useMemo } from 'react'
@@ -25,9 +33,11 @@ interface NoteHistoryProps {
 
 const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete }) => {
   const tasks = useTaskStore(state => state.tasks)
-  const removeTask = useTaskStore(state => (state as { removeTask?: (id: string) => void }).removeTask)
+  const removeTask = useTaskStore(state => state.removeTask)
   const [rawSearch, setRawSearch] = useState('')
   const [search, setSearch] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<Task | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const fuse = useMemo(() => new Fuse(tasks, {
     keys: ['audioMeta.title'],
     threshold: 0.4 // 匹配精度（越低越严格）
@@ -43,6 +53,20 @@ const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete })
   const filteredTasks = search.trim()
       ? fuse.search(search).map(result => result.item)
       : tasks
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return
+    setDeleting(true)
+    try {
+      await removeTask(deleteTarget.id)
+      setDeleteTarget(null)
+    } catch {
+      // toast handled in store
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   if (filteredTasks.length === 0) {
     return (
         <>
@@ -66,6 +90,31 @@ const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete })
 
   return (
     <>
+      <Dialog open={!!deleteTarget} onOpenChange={open => !open && !deleting && setDeleteTarget(null)}>
+        <DialogContent showCloseButton={!deleting}>
+          <DialogHeader>
+            <DialogTitle>确认删除笔记？</DialogTitle>
+            <DialogDescription>
+              将永久删除「{deleteTarget?.audioMeta.title || '未命名笔记'}」，
+              并同步移除阿里云服务器上的存储文件，此操作不可恢复。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={deleting}
+              onClick={() => setDeleteTarget(null)}
+            >
+              取消
+            </Button>
+            <Button type="button" variant="destructive" disabled={deleting} onClick={handleConfirmDelete}>
+              {deleting ? '删除中…' : '确认删除'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="mb-2">
         <input
             type="text"
@@ -150,7 +199,7 @@ const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete })
                         variant="ghost"
                         onClick={e => {
                           e.stopPropagation()
-                          removeTask?.(task.id)
+                          setDeleteTarget(task)
                         }}
                         className="shrink-0"
                       >
