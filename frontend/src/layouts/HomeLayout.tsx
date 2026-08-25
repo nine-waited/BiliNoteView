@@ -1,5 +1,5 @@
-import React, { FC, useRef, useState } from 'react'
-import { PanelLeftClose, PanelLeftOpen, History as HistoryIcon } from 'lucide-react'
+import React, { FC, useEffect, useRef, useState } from 'react'
+import { PanelLeftClose, History as HistoryIcon } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
@@ -16,10 +16,37 @@ interface IProps {
   History: React.ReactNode
 }
 
+const DESKTOP_HISTORY_DEFAULT = 22
+const DESKTOP_HISTORY_MAX = 35
+const MOBILE_HISTORY_MAX = 70
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767.98px)').matches
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767.98px)')
+    const onChange = () => setIsMobile(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+  return isMobile
+}
+
 /** 仅保留生成历史 + 主展示区（无左侧生成表单栏） */
 const HomeLayout: FC<IProps> = ({ Preview, History }) => {
   const [isMiddleCollapsed, setIsMiddleCollapsed] = useState(false)
   const middlePanelRef = useRef<ImperativePanelHandle>(null)
+  const isMobile = useIsMobile()
+  const historyMaxSize = isMobile ? MOBILE_HISTORY_MAX : DESKTOP_HISTORY_MAX
+  const historyDefaultSize = isMobile ? MOBILE_HISTORY_MAX : DESKTOP_HISTORY_DEFAULT
+
+  const expandHistoryToMax = () => {
+    const panel = middlePanelRef.current
+    if (!panel) return
+    panel.expand(historyMaxSize)
+    panel.resize(historyMaxSize)
+  }
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -35,13 +62,18 @@ const HomeLayout: FC<IProps> = ({ Preview, History }) => {
       <ResizablePanelGroup direction="horizontal" className="h-full w-full flex-1">
         <ResizablePanel
           ref={middlePanelRef}
-          defaultSize={22}
+          defaultSize={historyDefaultSize}
           minSize={14}
-          maxSize={35}
+          maxSize={historyMaxSize}
           collapsible
           collapsedSize={0}
           onCollapse={() => setIsMiddleCollapsed(true)}
-          onExpand={() => setIsMiddleCollapsed(false)}
+          onExpand={() => {
+            setIsMiddleCollapsed(false)
+            if (isMobile) {
+              requestAnimationFrame(() => middlePanelRef.current?.resize(MOBILE_HISTORY_MAX))
+            }
+          }}
         >
           <aside className="flex h-full flex-col overflow-hidden border-r border-neutral-200 bg-white">
             <header className="flex h-10 min-w-0 shrink-0 items-center justify-between gap-1 overflow-hidden border-b border-neutral-100 px-3">
@@ -77,7 +109,7 @@ const HomeLayout: FC<IProps> = ({ Preview, History }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  onClick={() => middlePanelRef.current?.expand()}
+                  onClick={expandHistoryToMax}
                   className="flex h-full w-8 shrink-0 items-center justify-center border-r border-neutral-200 bg-white hover:bg-neutral-50"
                 >
                   <HistoryIcon className="h-4 w-4 text-muted-foreground" />
@@ -90,7 +122,7 @@ const HomeLayout: FC<IProps> = ({ Preview, History }) => {
           </TooltipProvider>
         )}
 
-        <ResizablePanel defaultSize={78} minSize={40}>
+        <ResizablePanel defaultSize={isMobile ? 30 : 78} minSize={isMobile ? 30 : 40}>
           <main className="flex h-full min-h-0 flex-col overflow-hidden bg-white p-4 max-md:p-3 lg:p-6">{Preview}</main>
         </ResizablePanel>
       </ResizablePanelGroup>
