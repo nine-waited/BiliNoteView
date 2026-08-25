@@ -130,14 +130,11 @@ const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete })
             key={task.id}
             onClick={() => onSelect(task.id)}
             className={cn(
-              'flex cursor-pointer flex-col rounded-md border border-neutral-200 p-3 max-md:p-2',
+              'flex cursor-pointer flex-col rounded-md border border-neutral-200 p-3 max-md:flex-row max-md:items-center max-md:justify-between max-md:gap-2 max-md:p-2',
               selectedId === task.id && 'border-primary bg-primary-light'
             )}
           >
-            <div
-              className={cn('flex items-center gap-4')}
-            >
-              {/* 封面图 */}
+            <div className="flex min-w-0 items-center gap-4 max-md:gap-2">
               {(task.formData?.platform || task.audioMeta.platform) === 'local' ? (
                 <img
                   src={coverOrPlaceholder(task.audioMeta.cover_url)}
@@ -146,15 +143,13 @@ const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete })
                   className="h-10 w-12 rounded-md object-cover"
                 />
               ) : (
-                  <LazyImage
-                      src={coverOrPlaceholder(task.audioMeta.cover_url)}
-                      alt="封面"
-                  />
+                <LazyImage
+                  src={coverOrPlaceholder(task.audioMeta.cover_url)}
+                  alt="封面"
+                />
               )}
 
-              {/* 标题 + 状态 */}
-
-              <div className="hidden w-full items-center justify-between gap-2 md:flex">
+              <div className="hidden min-w-0 w-full items-center justify-between gap-2 md:flex">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -169,7 +164,7 @@ const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete })
                 </TooltipProvider>
               </div>
             </div>
-            <div className={'mt-2 flex items-center justify-between text-[10px] max-md:mt-1'}>
+            <div className="mt-2 flex items-center justify-between text-[10px] max-md:mt-0">
               <div className="shrink-0 max-md:hidden">
                 {task.status === 'SUCCESS' && (
                   <div className={'bg-primary w-10 rounded p-0.5 text-center text-white'}>

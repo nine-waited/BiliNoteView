@@ -81,13 +81,40 @@ export default function VideoBanner({ audioMeta, videoUrl }: VideoBannerProps) {
         {originalLink}
       </div>
 
-      {/* 手机：第一行封面+原视频，第二行 UP · 平台 */}
+      {/* 手机：第一行封面+标题，第二行 UP · 平台 + 原视频 */}
       <div className="relative flex flex-col gap-2 px-3 py-3 md:hidden">
-        <div className="flex items-center gap-3">
-          {coverImg}
-          {originalLink}
+        <div className="flex items-start gap-2">
+          {coverUrl && (
+            <img
+              src={coverUrl}
+              alt={title}
+              referrerPolicy="no-referrer"
+              className="h-14 w-24 shrink-0 rounded-md object-cover shadow-md"
+            />
+          )}
+          <h2
+            title={title}
+            className="h-14 min-w-0 flex-1 overflow-hidden text-[10px] leading-tight font-medium text-white line-clamp-4"
+          >
+            {title}
+          </h2>
         </div>
-        {metaLine}
+        <div className="flex min-w-0 items-center gap-1.5 text-[10px] leading-snug text-white/70">
+          {uploader && <span className="min-w-0 truncate">{uploader}</span>}
+          {uploader && platform && <span className="shrink-0 text-white/40">·</span>}
+          {platform && <span className="shrink-0">{platform}</span>}
+          {originalUrl && (
+            <a
+              href={originalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex shrink-0 items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm"
+            >
+              <ExternalLink className="h-3 w-3" />
+              <span>原视频</span>
+            </a>
+          )}
+        </div>
       </div>
     </div>
   )

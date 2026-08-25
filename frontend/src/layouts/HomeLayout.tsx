@@ -23,7 +23,7 @@ const HomeLayout: FC<IProps> = ({ Preview, History }) => {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-neutral-200 bg-white px-4">
+      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-neutral-200 bg-white px-4 max-md:h-11 max-md:py-1.5">
         <div className="hidden h-9 w-9 items-center justify-center overflow-hidden rounded-xl md:flex">
           <img src={logo} alt="logo" className="h-full w-full object-contain" />
         </div>
@@ -91,7 +91,7 @@ const HomeLayout: FC<IProps> = ({ Preview, History }) => {
         )}
 
         <ResizablePanel defaultSize={78} minSize={40}>
-          <main className="flex h-full min-h-0 flex-col overflow-hidden bg-white p-4 lg:p-6">{Preview}</main>
+          <main className="flex h-full min-h-0 flex-col overflow-hidden bg-white p-4 max-md:p-3 lg:p-6">{Preview}</main>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

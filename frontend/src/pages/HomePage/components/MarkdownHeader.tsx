@@ -102,7 +102,7 @@ export function MarkdownHeader({
     transcriptSource === 'whisper' ? '语音转写 · 慢速' : transcriptSource === 'subtitle' ? 'CC字幕 · 快速' : ''
 
   return (
-    <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b bg-white/95 px-4 py-2 backdrop-blur-sm">
+    <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b bg-white/95 px-4 py-2 backdrop-blur-sm max-md:border-0 max-md:bg-transparent max-md:px-0 max-md:py-1 max-md:backdrop-blur-none">
       {/* 左侧区域：版本 + 标签 + 创建时间 */}
       <div className="flex flex-wrap items-center gap-3 max-md:gap-x-1.5 max-md:gap-y-0">
         {isMultiVersion && (
@@ -156,7 +156,7 @@ export function MarkdownHeader({
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 max-md:flex-col max-md:items-start max-md:gap-0">
+        <div className="flex flex-wrap items-center gap-3 max-md:mt-2 max-md:flex-col max-md:items-start max-md:gap-0">
           {createAt && (
             <div className="text-muted-foreground text-sm max-md:text-[10px] max-md:leading-tight">
               创建时间: {formatDate(createAt)}
