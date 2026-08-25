@@ -104,7 +104,7 @@ export function MarkdownHeader({
   return (
     <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b bg-white/95 px-4 py-2 backdrop-blur-sm">
       {/* 左侧区域：版本 + 标签 + 创建时间 */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3 max-md:gap-x-1.5 max-md:gap-y-0">
         {isMultiVersion && (
           <Select value={currentVerId} onValueChange={setCurrentVerId}>
             <SelectTrigger className="h-8 w-[160px] text-sm">
@@ -156,16 +156,18 @@ export function MarkdownHeader({
           )}
         </div>
 
-        {createAt && (
-          <div className="text-muted-foreground text-sm max-md:text-[10px]">
-            创建时间: {formatDate(createAt)}
-          </div>
-        )}
-        {(totalTokens ?? 0) > 0 && (
-          <div className="text-muted-foreground text-sm max-md:text-[10px]">
-            Token: 输入 {promptTokens ?? 0} / 输出 {completionTokens ?? 0} / 合计 {totalTokens ?? 0}
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-3 max-md:flex-col max-md:items-start max-md:gap-0">
+          {createAt && (
+            <div className="text-muted-foreground text-sm max-md:text-[10px] max-md:leading-tight">
+              创建时间: {formatDate(createAt)}
+            </div>
+          )}
+          {(totalTokens ?? 0) > 0 && (
+            <div className="text-muted-foreground text-sm max-md:text-[10px] max-md:leading-tight">
+              Token: 输入 {promptTokens ?? 0} / 输出 {completionTokens ?? 0} / 合计 {totalTokens ?? 0}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 右侧操作按钮 */}
@@ -191,7 +193,7 @@ export function MarkdownHeader({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={handleCopy} variant="ghost" size="sm" className="h-8 px-2">
+              <Button onClick={handleCopy} variant="ghost" size="sm" className="h-8 px-2 max-md:hidden">
                 <Copy className="mr-1.5 h-4 w-4" />
                 <span className="text-sm">{copied ? '已复制' : '复制'}</span>
               </Button>

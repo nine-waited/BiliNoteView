@@ -130,7 +130,7 @@ const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete })
             key={task.id}
             onClick={() => onSelect(task.id)}
             className={cn(
-              'flex cursor-pointer flex-col rounded-md border border-neutral-200 p-3',
+              'flex cursor-pointer flex-col rounded-md border border-neutral-200 p-3 max-md:p-2',
               selectedId === task.id && 'border-primary bg-primary-light'
             )}
           >
@@ -154,7 +154,7 @@ const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete })
 
               {/* 标题 + 状态 */}
 
-              <div className="flex w-full items-center justify-between gap-2">
+              <div className="hidden w-full items-center justify-between gap-2 md:flex">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -169,8 +169,8 @@ const NoteHistory: FC<NoteHistoryProps> = ({ onSelect, selectedId, hideDelete })
                 </TooltipProvider>
               </div>
             </div>
-            <div className={'mt-2 flex items-center justify-between text-[10px]'}>
-              <div className="shrink-0">
+            <div className={'mt-2 flex items-center justify-between text-[10px] max-md:mt-1'}>
+              <div className="shrink-0 max-md:hidden">
                 {task.status === 'SUCCESS' && (
                   <div className={'bg-primary w-10 rounded p-0.5 text-center text-white'}>
                     已完成

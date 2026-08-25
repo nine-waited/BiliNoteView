@@ -28,8 +28,8 @@ const HomeLayout: FC<IProps> = ({ Preview, History }) => {
           <img src={logo} alt="logo" className="h-full w-full object-contain" />
         </div>
         <div className="flex items-center gap-2 md:flex-col md:items-start md:gap-0">
-          <div className="text-lg font-bold text-gray-800">BiliNote 速读</div>
-          <div className="text-xs text-neutral-500">云端笔记浏览</div>
+          <div className="text-lg font-bold text-gray-800 max-md:text-base">BiliNote 速读</div>
+          <div className="text-xs text-neutral-500 max-md:text-[10px]">云端笔记浏览</div>
         </div>
       </header>
       <ResizablePanelGroup direction="horizontal" className="h-full w-full flex-1">
@@ -44,14 +44,16 @@ const HomeLayout: FC<IProps> = ({ Preview, History }) => {
           onExpand={() => setIsMiddleCollapsed(false)}
         >
           <aside className="flex h-full flex-col overflow-hidden border-r border-neutral-200 bg-white">
-            <header className="flex h-10 shrink-0 items-center justify-between border-b border-neutral-100 px-3">
-              <span className="text-sm font-medium text-gray-600">生成历史</span>
+            <header className="flex h-10 min-w-0 shrink-0 items-center justify-between gap-1 overflow-hidden border-b border-neutral-100 px-3">
+              <span className="min-w-0 flex-1 overflow-hidden whitespace-nowrap text-sm font-medium text-gray-600">
+                生成历史
+              </span>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => middlePanelRef.current?.collapse()}
-                      className="text-muted-foreground hover:text-primary cursor-pointer rounded p-1 hover:bg-neutral-100"
+                      className="text-muted-foreground hover:text-primary shrink-0 cursor-pointer rounded p-1 hover:bg-neutral-100"
                     >
                       <PanelLeftClose className="h-4 w-4" />
                     </button>
