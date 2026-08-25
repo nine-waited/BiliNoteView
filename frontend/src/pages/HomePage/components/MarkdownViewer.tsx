@@ -62,7 +62,7 @@ function createMarkdownComponents(baseURL: string) {
   return {
     h1: ({ children, ...props }: any) => (
       <h1
-        className="text-primary my-6 scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl"
+        className="text-primary my-6 scroll-m-20 text-3xl font-extrabold tracking-tight max-md:my-4 max-md:text-2xl lg:text-4xl"
         {...props}
       >
         {children}
@@ -70,7 +70,7 @@ function createMarkdownComponents(baseURL: string) {
     ),
     h2: ({ children, ...props }: any) => (
       <h2
-        className="text-primary mt-10 mb-4 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0"
+        className="text-primary mt-10 mb-4 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0 max-md:mt-6 max-md:text-xl"
         {...props}
       >
         {children}
@@ -78,7 +78,7 @@ function createMarkdownComponents(baseURL: string) {
     ),
     h3: ({ children, ...props }: any) => (
       <h3
-        className="text-primary mt-8 mb-4 scroll-m-20 text-xl font-semibold tracking-tight"
+        className="text-primary mt-8 mb-4 scroll-m-20 text-xl font-semibold tracking-tight max-md:mt-5 max-md:text-lg"
         {...props}
       >
         {children}
@@ -86,14 +86,14 @@ function createMarkdownComponents(baseURL: string) {
     ),
     h4: ({ children, ...props }: any) => (
       <h4
-        className="text-primary mt-6 mb-2 scroll-m-20 text-lg font-semibold tracking-tight"
+        className="text-primary mt-6 mb-2 scroll-m-20 text-lg font-semibold tracking-tight max-md:mt-4 max-md:text-base"
         {...props}
       >
         {children}
       </h4>
     ),
     p: ({ children, ...props }: any) => (
-      <p className="break-words leading-7 [&:not(:first-child)]:mt-6" {...props}>
+      <p className="break-words leading-7 [&:not(:first-child)]:mt-6 max-md:text-sm max-md:leading-6" {...props}>
         {children}
       </p>
     ),

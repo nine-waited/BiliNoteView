@@ -129,32 +129,42 @@ export function MarkdownHeader({
           </Select>
         )}
 
-        <Badge variant="secondary" className="bg-pink-100 text-pink-700 hover:bg-pink-200">
-          {modelName}
-        </Badge>
-        <Badge variant="secondary" className="bg-cyan-100 text-cyan-700 hover:bg-cyan-200">
-          {styleName}
-        </Badge>
-
-        {createAt && (
-          <div className="text-muted-foreground text-sm">创建时间: {formatDate(createAt)}</div>
-        )}
-        {(totalTokens ?? 0) > 0 && (
-          <div className="text-muted-foreground text-sm">
-            Token: 输入 {promptTokens ?? 0} / 输出 {completionTokens ?? 0} / 合计 {totalTokens ?? 0}
-          </div>
-        )}
-        {processingLabel && (
+        <div className="flex flex-nowrap items-center gap-1.5">
           <Badge
             variant="secondary"
-            className={
-              transcriptSource === 'whisper'
-                ? 'bg-amber-100 text-amber-800 hover:bg-amber-200'
-                : 'bg-green-100 text-green-800 hover:bg-green-200'
-            }
+            className="bg-pink-100 text-pink-700 hover:bg-pink-200 max-md:px-1.5 max-md:py-0 max-md:text-[10px]"
           >
-            {processingLabel}
+            {modelName}
           </Badge>
+          <Badge
+            variant="secondary"
+            className="bg-cyan-100 text-cyan-700 hover:bg-cyan-200 max-md:px-1.5 max-md:py-0 max-md:text-[10px]"
+          >
+            {styleName}
+          </Badge>
+          {processingLabel && (
+            <Badge
+              variant="secondary"
+              className={
+                transcriptSource === 'whisper'
+                  ? 'bg-amber-100 text-amber-800 hover:bg-amber-200 max-md:px-1.5 max-md:py-0 max-md:text-[10px]'
+                  : 'bg-green-100 text-green-800 hover:bg-green-200 max-md:px-1.5 max-md:py-0 max-md:text-[10px]'
+              }
+            >
+              {processingLabel}
+            </Badge>
+          )}
+        </div>
+
+        {createAt && (
+          <div className="text-muted-foreground text-sm max-md:text-[10px]">
+            创建时间: {formatDate(createAt)}
+          </div>
+        )}
+        {(totalTokens ?? 0) > 0 && (
+          <div className="text-muted-foreground text-sm max-md:text-[10px]">
+            Token: 输入 {promptTokens ?? 0} / 输出 {completionTokens ?? 0} / 合计 {totalTokens ?? 0}
+          </div>
         )}
       </div>
 
@@ -169,7 +179,7 @@ export function MarkdownHeader({
                 }}
                 variant="ghost"
                 size="sm"
-                className="h-8 px-2"
+                className="h-8 px-2 max-md:hidden"
               >
                 <BrainCircuit className="mr-1.5 h-4 w-4" />
                 <span className="text-sm">{viewMode == 'preview' ? '思维导图' : 'markdown'}</span>
@@ -193,7 +203,7 @@ export function MarkdownHeader({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={onDownload} variant="ghost" size="sm" className="h-8 px-2">
+              <Button onClick={onDownload} variant="ghost" size="sm" className="h-8 px-2 max-md:hidden">
                 <Download className="mr-1.5 h-4 w-4" />
                 <span className="text-sm">导出 Markdown</span>
               </Button>
@@ -210,7 +220,7 @@ export function MarkdownHeader({
                 }}
                 variant="ghost"
                 size="sm"
-                className="h-8 px-2"
+                className="h-8 px-2 max-md:hidden"
               >
                 {/*<Download className="mr-1.5 h-4 w-4" />*/}
                 <span className="text-sm">原文参照</span>

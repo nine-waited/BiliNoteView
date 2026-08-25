@@ -9,7 +9,7 @@ const History = ({ hideDelete }: { hideDelete?: boolean }) => {
     <>
       <div className={'flex h-full w-full flex-col gap-4 px-2.5 py-1.5'}>
         {/*生成历史    */}
-        <div className="my-4 flex h-[40px] items-center gap-2">
+        <div className="my-4 flex h-[40px] items-center gap-2 max-md:hidden">
           <Clock className="h-4 w-4 text-neutral-500" />
           <h2 className="text-base font-medium text-neutral-900">生成历史</h2>
         </div>

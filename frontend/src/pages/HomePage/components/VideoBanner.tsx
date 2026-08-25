@@ -41,25 +41,25 @@ export default function VideoBanner({ audioMeta, videoUrl }: VideoBannerProps) {
       </div>
 
       {/* 内容层 */}
-      <div className="relative flex items-center gap-4 px-5 py-4">
+      <div className="relative flex items-center gap-4 px-5 py-4 max-md:flex-col max-md:items-start max-md:gap-2 max-md:px-3 max-md:py-3">
         {/* 封面缩略图 */}
         {coverUrl && (
           <img
             src={coverUrl}
             alt={title}
             referrerPolicy="no-referrer"
-            className="h-16 w-28 shrink-0 rounded-md object-cover shadow-md"
+            className="h-16 w-28 shrink-0 rounded-md object-cover shadow-md max-md:h-20 max-md:w-36"
           />
         )}
 
         {/* 文字信息 */}
-        <div className="min-w-0 flex-1">
-          <h2 className="truncate text-base font-bold text-white" title={title}>
+        <div className="min-w-0 flex-1 max-md:w-full">
+          <h2 className="truncate text-base font-bold text-white max-md:hidden" title={title}>
             {title}
           </h2>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-white/70">
-            {uploader && <span>{uploader}</span>}
-            {uploader && platform && <span className="text-white/40">·</span>}
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-white/70 max-md:mt-0 max-md:flex-col max-md:items-start max-md:gap-1 max-md:text-xs max-md:leading-snug">
+            {uploader && <span className="max-md:whitespace-normal max-md:break-words">{uploader}</span>}
+            {uploader && platform && <span className="text-white/40 max-md:hidden">·</span>}
             {platform && <span>{platform}</span>}
           </div>
         </div>
