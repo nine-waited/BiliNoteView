@@ -18,7 +18,7 @@ interface IProps {
 
 const DESKTOP_HISTORY_DEFAULT = 22
 const DESKTOP_HISTORY_MAX = 35
-const MOBILE_HISTORY_MAX = 25
+const MOBILE_HISTORY_MAX = 30
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(
@@ -122,7 +122,7 @@ const HomeLayout: FC<IProps> = ({ Preview, History }) => {
           </TooltipProvider>
         )}
 
-        <ResizablePanel defaultSize={isMobile ? 75 : 78} minSize={40}>
+        <ResizablePanel defaultSize={isMobile ? 70 : 78} minSize={40}>
           <main className="flex h-full min-h-0 flex-col overflow-hidden bg-white p-4 max-md:p-3 lg:p-6">{Preview}</main>
         </ResizablePanel>
       </ResizablePanelGroup>
